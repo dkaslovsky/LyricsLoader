@@ -1,7 +1,13 @@
 # LyricsLoader
 LyricsLoader provides a small class for scraping song lyrics from [LyricWiki](https://lyrics.fandom.com/wiki/LyricWiki).
 
-Usage is as follows:
+The `LyricsLoader` class exposes the following methods/properties:
+* `LyricsLoader(artist)` instantiates the `LyricsLoader` class for searching the specified artist
+* `LyricsLoader.albums` property contains a list of album names by the specified artist
+* `LyricsLoader.get_tracks(album)` return a list of track names contained on the specified album
+* `LyricsLoader.get_lyrics(track)` returns a string containing the lyrics for the specified track
+
+Example useage:
 ```
 >>> from lyricsloader import LyricsLoader
 
