@@ -1,8 +1,5 @@
 # LyricsLoader
-Scrape song lyrics from lyrics.wikia.com
-
-### Overview
-LyricsLoader provides a small class for scraping song lyrics.
+LyricsLoader provides a small class for scraping song lyrics from [LyricWiki](https://lyrics.fandom.com/wiki/LyricWiki).
 
 Usage is as follows:
 ```
@@ -55,7 +52,16 @@ They're whipping
 ```
 Hopefully I have not violated any copyright laws by displaying this output.  If I have, my sincerest apologies to Eddie, Jeff, Stone, Mike, and Matt.
 
-A `LyricsLoaderError` is raised if an artist/album/track is not found.  To suppress this exception and instead return empty objects, pass `suppress_errs=True` to the constructor.
+A `LyricsLoaderError` is raised if an artist/album/track is not found.  To suppress this exception and instead return empty objects, pass `suppress_errs=True` to the constructor.  This exception can be imported for try/except logic:
+```
+>>> from lyricsloader import LyricsLoader, LyricsLoaderError
+>>> try:
+...     loader = LyricsLoader('Some Arist Not To Be Found')
+... except LyricsLoaderError as e:
+...     print(f'caught exception: {e}')
+... 
+caught exception: artist "Some Arist Not To Be Found" not found
+```
 
 ### Installation
 This package is not yet hosted on PyPI.  To install from source:
