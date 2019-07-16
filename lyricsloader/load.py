@@ -15,29 +15,6 @@ class LyricsLoader:
         self.suppress_err = suppress_err
 
         self._album_to_tracks = self._query_artist()
-    
-    def _check_result(self, result: Union[List[str], str], category: str, name: str) -> None:
-        """
-        Raise exception on empty result
-        :param result: data structure to check if empty
-        :param category: category of object that is potentially empty (artist/album/track)
-        :param name: specific name that was not found if empty
-        """
-        if self.suppress_err:
-            return
-        if not result:
-            raise LyricsLoaderError(category, name)
-    
-    def _query_artist(self) -> Dict[str, List[str]]:
-        """
-        Get artist's albums and tracks from lyrics.wikia.com API
-        """
-        _artist = self.artist.replace(' ', '_')
-        url = f'http://lyrics.wikia.com/api.php?action=lyrics&artist={_artist}&fmt=json'
-        resp = requests.get(url)
-        jresp = resp.json()
-        self._check_result(jresp['albums'], 'artist', self.artist)
-        return {album['album']: album['songs'] for album in jresp['albums']}
 
     @property
     def albums(self) -> List[str]:
@@ -69,6 +46,29 @@ class LyricsLoader:
         if lyrics is None:
             return self._check_result(lyrics, 'track', track)
         return lyrics.get_text(separator='\n').strip()
+
+    def _query_artist(self) -> Dict[str, List[str]]:
+        """
+        Get artist's albums and tracks from lyrics.wikia.com API
+        """
+        _artist = self.artist.replace(' ', '_')
+        url = f'http://lyrics.wikia.com/api.php?action=lyrics&artist={_artist}&fmt=json'
+        resp = requests.get(url)
+        jresp = resp.json()
+        self._check_result(jresp.get('albums'), 'artist', self.artist)
+        return {album['album']: album['songs'] for album in jresp['albums']}
+
+    def _check_result(self, result: Union[List[str], str], category: str, name: str) -> None:
+        """
+        Raise exception on empty result
+        :param result: data structure to check if empty
+        :param category: category of object that is potentially empty (artist/album/track)
+        :param name: specific name that was not found if empty
+        """
+        if self.suppress_err:
+            return
+        if not result:
+            raise LyricsLoaderError(category, name)
 
 
 class LyricsLoaderError(Exception):
