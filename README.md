@@ -57,8 +57,8 @@ A `LyricsLoaderError` is raised if an artist/album/track is not found.  To suppr
 >>> from lyricsloader import LyricsLoader, LyricsLoaderError
 >>> try:
 ...     loader = LyricsLoader('Some Arist Not To Be Found')
-... except LyricsLoaderError as e:
-...     print(f'caught exception: {e}')
+... except LyricsLoaderError as err:
+...     print(f'caught exception: {err}')
 ... 
 caught exception: artist "Some Arist Not To Be Found" not found
 ```
