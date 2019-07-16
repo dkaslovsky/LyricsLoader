@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup
 
 class LyricsLoader:
 
-    def __init__(self, artist: str, suppress_errs: bool = False) -> None:
+    def __init__(self, artist: str, suppress_err: bool = False) -> None:
         """
         :param artist: name of artist
-        :param suppress_errs: whether to suppress LyricsLoaderException if artist/album/track not found
+        :param suppress_err: whether to suppress LyricsLoaderError if artist/album/track not found
         """
         self.artist = artist
-        self.suppress_errs = suppress_errs
+        self.suppress_err = suppress_err
 
         self._album_to_tracks = self._query_artist()
     
@@ -23,7 +23,7 @@ class LyricsLoader:
         :param category: category of object that is potentially empty (artist/album/track)
         :param name: specific name that was not found if empty
         """
-        if self.suppress_errs:
+        if self.suppress_err:
             return
         if not result:
             raise LyricsLoaderError(category, name)
@@ -65,24 +65,10 @@ class LyricsLoader:
         url = f'http://lyrics.wikia.com/{self.artist}:{_track}'
         resp = requests.get(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
-        lyrics = soup.find("div", {'class': 'lyricbox'})
+        lyrics = soup.find('div', {'class': 'lyricbox'})
         if lyrics is None:
             return self._check_result(lyrics, 'track', track)
-
-        # remove unecessary tags
-        for tag in ['div', 'i', 'b', 'a']:
-            for match in lyrics.findAll(tag):
-                match.unwrap()
-
-        # remove non unicode characters, replace <br> with newlines
-        lyrics = (
-            str(lyrics)
-            .encode('utf-8', errors='replace')[22:-6:]
-            .decode('utf-8')
-            .replace('\n', '')
-            .replace('<br/>', '\n')
-        )
-        return lyrics
+        return lyrics.get_text(separator='\n').strip()
 
 
 class LyricsLoaderError(Exception):
