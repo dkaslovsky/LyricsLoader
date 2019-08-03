@@ -14,8 +14,15 @@ class LyricsLoader:
         self.artist = artist
         self.suppress_err = suppress_err
 
+        self._artist = self.artist.replace(' ', '_')  # formatted for query
         self._album_to_tracks = self._query_artist()
 
+    def __repr__(self):
+        """
+        Printing instance shows artist
+        """
+        return f'{self.__class__.__name__} ({self.artist})'
+    
     @property
     def albums(self) -> List[str]:
         """
@@ -39,7 +46,7 @@ class LyricsLoader:
         :param track: name of track
         """
         _track = track.replace(' ', '_')
-        url = f'http://lyrics.wikia.com/{self.artist}:{_track}'
+        url = f'http://lyrics.wikia.com/{self._artist}:{_track}'
         resp = requests.get(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
         lyrics = soup.find('div', {'class': 'lyricbox'})
@@ -51,8 +58,7 @@ class LyricsLoader:
         """
         Get artist's albums and tracks from lyrics.wikia.com API
         """
-        _artist = self.artist.replace(' ', '_')
-        url = f'http://lyrics.wikia.com/api.php?action=lyrics&artist={_artist}&fmt=json'
+        url = f'http://lyrics.wikia.com/api.php?action=lyrics&artist={self._artist}&fmt=json'
         resp = requests.get(url)
         jresp = resp.json()
         self._check_result(jresp.get('albums'), 'artist', self.artist)
